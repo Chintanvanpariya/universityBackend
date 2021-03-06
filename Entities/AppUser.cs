@@ -11,7 +11,7 @@ namespace UniversityServer.Entities
         public string Name { get; set; }
         public string Gender { get; set; }
         public ICollection<Course> Courses { get; set; }
-        public ICollection<AppUserRole> UserRoles { get; set; }
+        //public ICollection<AppUserRole> UserRoles { get; set; }
 
     }
 }
