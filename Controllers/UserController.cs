@@ -9,11 +9,11 @@ using UniversityServer.Entities;
 namespace UniversityServer.Controllers
 {
     //[Authorize]
-    public class UsersController : BaseApiController
+    public class UserController : BaseApiController
     {
         private readonly DataContext _context;
 
-        public UsersController(DataContext context)
+        public UserController(DataContext context)
         {
             this._context = context;
         }
