@@ -5,6 +5,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Errors\**" />
+    <Compile Remove="Middleware\**" />
+    <Content Remove="Errors\**" />
+    <Content Remove="Middleware\**" />
+    <EmbeddedResource Remove="Errors\**" />
+    <EmbeddedResource Remove="Middleware\**" />
+    <None Remove="Errors\**" />
+    <None Remove="Middleware\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.4" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="5.0.4" />
