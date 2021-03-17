@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using UniversityServer.Extensions;
+using UniversityServer.Middleware;
 
 namespace UniversityServer
 {
@@ -36,12 +37,15 @@ namespace UniversityServer
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
+            //if (env.IsDevelopment())
+            //{
+            //    app.UseDeveloperExceptionPage();
+            //}
 
-            app.UseHttpsRedirection();
+            //this thing handles error as well as logs and give error as a response to frontEnd 
+            app.UseMiddleware<ExceptionMiddleware>();
+
+            //app.UseHttpsRedirection();
 
             app.UseRouting();
 
@@ -50,8 +54,10 @@ namespace UniversityServer
                 .AllowCredentials()
                 .WithOrigins("http://localhost:4200"));
 
+            //used to checking if a valid user or not
             app.UseAuthentication();
 
+            //used for checking if loggedin user is authorized to do this ( Check Role) 
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
