@@ -5,13 +5,12 @@ using System.Threading.Tasks;
 
 namespace UniversityServer.Entities
 {
-    public class Schedule
+    public class UserCourse
     {
-        public int Id { get; set; }
-        public TimeSpan Fromtime { get; set; }
-        public TimeSpan ToTime { get; set; }
-        public int Day { get; set; }
+        public AppUser User { get; set; }
+        public int UserId { get; set; }
         public Course Course { get; set; }
         public int CourseId { get; set; }
+
     }
 }
