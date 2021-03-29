@@ -27,19 +27,16 @@ namespace UniversityServer.Data
             return await context.Users.FindAsync(id);
         }
 
-        public async Task<AppUser> GetUserByUsernameAsync(string username)
+        public async Task<AppUser> GetUserByNameAsync(string name)
         {
-            return await context.Users.SingleOrDefaultAsync(x => x.Name == username);
-        }
-
-        public Task<string> GetUserGender(string username)
-        {
-            throw new NotImplementedException();
+            return await context.Users.SingleOrDefaultAsync(x => x.Name == name);
         }
 
         public async Task<IEnumerable<AppUser>> GetUsersAsync()
         {
-            return await context.Users.ToListAsync();
+            return await context.Users
+                            .Include(p => p.UserCourses)
+                            .ToListAsync();
         }
 
         public void Update(AppUser user)

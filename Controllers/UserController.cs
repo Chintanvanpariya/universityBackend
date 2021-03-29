@@ -6,29 +6,36 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using UniversityServer.Data;
 using UniversityServer.Entities;
+using UniversityServer.Interfaces;
 
 namespace UniversityServer.Controllers
 {
     [Authorize]
     public class UserController : BaseApiController
     {
-        private readonly DataContext _context;
+        private readonly IUserRepository userRepo;
 
-        public UserController(DataContext context)
+        public UserController(IUserRepository userRepo)
         {
-            this._context = context;
+            this.userRepo = userRepo;
         }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<AppUser>>> GetUsers()
         {
-            return await _context.Users.ToListAsync();
+            return Ok(await userRepo.GetUsersAsync());
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<AppUser>> GetUser(int id)
         {
-            return await _context.Users.FindAsync(id);
+            return await userRepo.GetUserByIdAsync(id);
+        }
+
+        [HttpGet("{name}")]
+        public async Task<AppUser> GetUserByName(string name)
+        {
+            return await userRepo.GetUserByNameAsync(name);
         }
     }
 }
