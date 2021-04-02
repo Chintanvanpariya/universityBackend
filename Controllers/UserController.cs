@@ -1,10 +1,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using UniversityServer.Data;
+using Serendipity.DTOs;
 using UniversityServer.Entities;
 using UniversityServer.Interfaces;
 
@@ -14,6 +15,7 @@ namespace UniversityServer.Controllers
     public class UserController : BaseApiController
     {
         private readonly IUserRepository userRepo;
+        private readonly IMapper mapper;
 
         public UserController(IUserRepository userRepo)
         {
@@ -21,21 +23,25 @@ namespace UniversityServer.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<AppUser>>> GetUsers()
+        public async Task<ActionResult<IEnumerable<MemberDto>>> GetUsers()
         {
-            return Ok(await userRepo.GetUsersAsync());
-        }
-
-        [HttpGet("{id}")]
-        public async Task<ActionResult<AppUser>> GetUser(int id)
-        {
-            return await userRepo.GetUserByIdAsync(id);
+            var users = await userRepo.GetMembersAsync();
+            return Ok(users);
         }
 
         [HttpGet("{name}")]
-        public async Task<AppUser> GetUserByName(string name)
+        public async Task<ActionResult<MemberDto>> GetUserByName(string name)
         {
-            return await userRepo.GetUserByNameAsync(name);
+            return await userRepo.GetMemberAsync(name);
         }
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult<MemberDto>> GetUser(int id)
+        {
+            var user = await userRepo.GetUserByIdAsync(id);
+            return mapper.Map<MemberDto>(user);
+        }
+
     }
+
 }

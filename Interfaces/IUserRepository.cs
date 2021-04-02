@@ -1,3 +1,4 @@
+using Serendipity.DTOs;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UniversityServer.DTOs;
@@ -8,11 +9,13 @@ namespace UniversityServer.Interfaces
     public interface IUserRepository
     {
         void Update(AppUser user);
-        Task<IEnumerable<AppUser>> GetUsersAsync();
+
+        //Task<IEnumerable<AppUser>> GetUsersAsync();
+
+        //Task<AppUser> GetUserByNameAsync(string name);
         Task<AppUser> GetUserByIdAsync(int id);
-        Task<AppUser> GetUserByNameAsync(string username);
-       // Task<PagedList<MemberDto>> GetMembersAsync(UserParams userParams);
-        //Task<MemberDto> GetMemberAsync(string username);
+        Task<IEnumerable<MemberDto>> GetMembersAsync();
+        Task<MemberDto> GetMemberAsync(string name);
         Task<string> EnrollCourseAsync(int id);
         Task<bool> SaveAllAsync();
     }

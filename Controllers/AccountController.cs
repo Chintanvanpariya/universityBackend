@@ -34,7 +34,10 @@ namespace UniversityServer.Controllers
             {
                 Email = registerDto.Email.ToLower(),
                 PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(registerDto.Password)),
-                PasswordSalt = hmac.Key
+                PasswordSalt = hmac.Key,
+                Name = registerDto.Name,
+                Gender = registerDto.Gender,
+                DateOfBirth = registerDto.DateOfBirth
             };
 
             _context.Users.Add(user);
@@ -43,7 +46,7 @@ namespace UniversityServer.Controllers
             return new UserDto
             {
                 Email = user.Email,
-                //Token = _tokenService.CreateToken(user)
+                Token = "_blank",
             };
         }
 

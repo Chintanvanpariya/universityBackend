@@ -4,6 +4,7 @@ using UniversityServer.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using UniversityServer.Helper;
 
 namespace UniversityServer.Extensions
 {
@@ -13,6 +14,7 @@ namespace UniversityServer.Extensions
         {
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddAutoMapper(typeof(AutoMapperProfiles).Assembly);
             services.AddDbContext<DataContext>(options =>
             {
                 options.UseSqlServer(config.GetConnectionString("DefaultConnection"));
