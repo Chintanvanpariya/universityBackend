@@ -14,34 +14,36 @@ namespace UniversityServer.Controllers
     [Authorize]
     public class UserController : BaseApiController
     {
-        private readonly IUserRepository userRepo;
+
+        private readonly IUnitOfWork unitOfWork;
         private readonly IMapper mapper;
 
-        public UserController(IUserRepository userRepo)
+        public UserController(IUnitOfWork uow, IMapper mapr)
         {
-            this.userRepo = userRepo;
+            unitOfWork = uow;
+            mapper = mapr;
         }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<MemberDto>>> GetUsers()
         {
-            var users = await userRepo.GetMembersAsync();
+            var users = await unitOfWork.UserRepository.GetMembersAsync();
             return Ok(users);
         }
 
         [HttpGet("{name}")]
         public async Task<ActionResult<MemberDto>> GetUserByName(string name)
         {
-            return await userRepo.GetMemberAsync(name);
+            return await unitOfWork.UserRepository.GetMemberAsync(name);
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<MemberDto>> GetUser(int id)
         {
-            var user = await userRepo.GetUserByIdAsync(id);
+            var user = await unitOfWork.UserRepository.GetUserByIdAsync(id);
             return mapper.Map<MemberDto>(user);
         }
 
-    }
+    } 
 
 }

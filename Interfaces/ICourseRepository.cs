@@ -8,7 +8,7 @@ namespace UniversityServer.Interfaces
 {
     public interface ICourseRepository
     {
-        Task<string> CreateCourseAsync(Course course);
+        void CreateCourseAsync(Course course);
         Task<Course> GetCourseByIdAsync(int courseId);
         Task<IEnumerable<Course>> GetCoursesAsync();
         void UpdateCourse(Course course);

@@ -32,9 +32,9 @@ namespace UniversityServer.Data
             throw new NotImplementedException();
         }
 
-        public async Task<string> CreateCourseAsync(Course course)
+        public void CreateCourseAsync(Course course)
         {
-            throw new NotImplementedException();
+            context.Courses.Add(course);
         }
 
         public async Task<IEnumerable<Course>> GetCoursesAsync()
