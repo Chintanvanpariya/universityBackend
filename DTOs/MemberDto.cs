@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UniversityServer.Entities;
 
-namespace Serendipity.DTOs
+namespace UniversityServer.DTOs
 {
     public class MemberDto
     {

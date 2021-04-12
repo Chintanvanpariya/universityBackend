@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
-using Serendipity.DTOs;
+using UniversityServer.DTOs;
 using System;
 using System.Collections.Generic;
 using System.Linq;

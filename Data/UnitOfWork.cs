@@ -6,8 +6,8 @@ namespace UniversityServer.Data
 {
     public class UnitOfWork : IUnitOfWork
     {
-        private readonly IMapper _mapper;
         private readonly DataContext _context;
+        private readonly IMapper _mapper;
         public UnitOfWork(DataContext context, IMapper mapper)
         {
             _context = context;
@@ -15,8 +15,8 @@ namespace UniversityServer.Data
         }
 
         public IUserRepository UserRepository => new UserRepository(_context, _mapper);
-
         public ICourseRepository CourseRepository => new CourseRepository(_context, _mapper);
+        public IScheduleRepository ScheduleRepository => new ScheduleRepository(_context, _mapper);
 
         public async Task<bool> Complete()
         {

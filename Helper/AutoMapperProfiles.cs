@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using Serendipity.DTOs;
+using UniversityServer.DTOs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,9 +14,12 @@ namespace UniversityServer.Helper
         public AutoMapperProfiles()
         {
             CreateMap<AppUser, MemberDto>()
-                .ForMember(dest=> dest.Age,
-                  opt => opt.MapFrom(src=>src.DateOfBirth.CalculateAge()));
+                .ForMember(dest => dest.Courses, opt => opt.MapFrom(src => src.UserCourses))
+                .ForMember(dest=> dest.Age, opt => opt.MapFrom(src=>src.DateOfBirth.CalculateAge()));
+
             CreateMap<Course, CourseDto>();
+
+            CreateMap<Schedule, ScheduleDto>();
         }
     }
 }

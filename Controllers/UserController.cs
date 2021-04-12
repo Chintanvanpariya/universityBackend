@@ -5,7 +5,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Serendipity.DTOs;
+using UniversityServer.DTOs;
 using UniversityServer.Entities;
 using UniversityServer.Interfaces;
 
@@ -14,7 +14,6 @@ namespace UniversityServer.Controllers
     [Authorize]
     public class UserController : BaseApiController
     {
-
         private readonly IUnitOfWork unitOfWork;
         private readonly IMapper mapper;
 

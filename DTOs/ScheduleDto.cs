@@ -3,15 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace UniversityServer.Entities
+namespace UniversityServer.DTOs
 {
-    public class Schedule
+    public class ScheduleDto
     {
         public int Id { get; set; }
-        public TimeSpan Fromtime { get; set; }
-        public TimeSpan ToTime { get; set; }
+        public string Fromtime { get; set; }
+        public string ToTime { get; set; }
         public string Day { get; set; }
-        public Course Course { get; set; }
         public int CourseId { get; set; }
     }
 }

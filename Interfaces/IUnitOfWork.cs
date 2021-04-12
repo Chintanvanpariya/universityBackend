@@ -6,7 +6,7 @@ namespace UniversityServer.Interfaces
     {
         IUserRepository UserRepository {get; }
         ICourseRepository CourseRepository {get; }
-        //IScheduleRepository ScheduleRepository {get; }
+        IScheduleRepository ScheduleRepository { get; }
 
         Task<bool> Complete();
         bool HasChanges();

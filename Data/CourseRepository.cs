@@ -1,11 +1,11 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
-using Serendipity.DTOs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using UniversityServer.DTOs;
 using UniversityServer.Entities;
 using UniversityServer.Interfaces;
 
@@ -27,26 +27,29 @@ namespace UniversityServer.Data
             return await context.SaveChangesAsync() > 0;
         }
 
-        public async Task<string> EnrollCourseAsync(int id)
-        {
-            throw new NotImplementedException();
-        }
+        //public async Task<string> EnrollCourseAsync(int id)
+        //{
+        //    throw new NotImplementedException();
+        //}
 
         public void CreateCourseAsync(Course course)
         {
             context.Courses.Add(course);
         }
 
-        public async Task<IEnumerable<Course>> GetCoursesAsync()
+        public async Task<IEnumerable<CourseDto>> GetCoursesAsync()
         {
             return await context.Courses
-                .ProjectTo<Course>(mapper.ConfigurationProvider)
+                .ProjectTo<CourseDto>(mapper.ConfigurationProvider)
                 .ToListAsync();
         }
 
-        public async Task<Course> GetCourseByIdAsync(int courseId)
+        public async Task<CourseDto> GetCourseByIdAsync(int courseId)
         {
-            return await context.Courses.FindAsync(courseId);
+            return await context.Courses
+               .Where(x => x.Id == courseId)
+               .ProjectTo<CourseDto>(mapper.ConfigurationProvider)
+               .SingleOrDefaultAsync();
         }
 
         public void UpdateCourse(Course course)
@@ -58,5 +61,6 @@ namespace UniversityServer.Data
         {
             context.Courses.Remove(course);
         }
+
     }
 }

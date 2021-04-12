@@ -15,8 +15,8 @@ namespace UniversityServer.Data
 
         public DbSet<AppUser> Users { get; set; }
         public DbSet<Course> Courses { get; set; }
-        public DbSet<Schedule> Schedule { get; set; }
-        public DbSet<UserCourse> UserCourse { get; set; }
+        public DbSet<Schedule> Schedules { get; set; }
+        public DbSet<UserCourse> UserCourses { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

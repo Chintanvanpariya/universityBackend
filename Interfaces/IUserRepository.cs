@@ -1,7 +1,6 @@
-using Serendipity.DTOs;
+using UniversityServer.DTOs;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using UniversityServer.DTOs;
 using UniversityServer.Entities;
 
 namespace UniversityServer.Interfaces

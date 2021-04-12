@@ -5,7 +5,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Serendipity.DTOs;
+using UniversityServer.DTOs;
 using UniversityServer.Entities;
 using UniversityServer.Interfaces;
 
@@ -14,36 +14,43 @@ namespace UniversityServer.Controllers
     [Authorize]
     public class CourseController : BaseApiController
     {
-     
-            private readonly ICourseRepository courseRepo;
-            private readonly IMapper mapper;
 
-            //public UserController(ICourseRepository userRepo)
-            //{
-            //    this.courseRepo = userRepo;
-            //}
+        private readonly IUnitOfWork unitOfWork;
+        private readonly IMapper mapper;
 
-            //[HttpGet]
-            //public async Task<ActionResult<IEnumerable<MemberDto>>> GetUsers()
-            //{
-            //    var users = await userRepo.GetMembersAsync();
-            //    return Ok(users);
-            //}
+        public CourseController(IUnitOfWork uow, IMapper mapr)
+        {
+            unitOfWork = uow;
+            mapper = mapr;
+        }
 
-            //[HttpGet("{name}")]
-            //public async Task<ActionResult<MemberDto>> GetUserByName(string name)
-            //{
-            //    return await userRepo.GetMemberAsync(name);
-            //}
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<CourseDto>>> GetCourses()
+        {
+            var courses = await unitOfWork.CourseRepository.GetCoursesAsync();
+            return Ok(courses);
+        }
 
-            //[HttpGet("{id}")]
-            //public async Task<ActionResult<MemberDto>> GetUser(int id)
-            //{
-            //    var user = await userRepo.GetUserByIdAsync(id);
-            //    return mapper.Map<MemberDto>(user);
-            //}
+        [HttpGet("{id}")]
+        public async Task<ActionResult<CourseDto>> GetCourse(int id)
+        {
+            var course = await unitOfWork.CourseRepository.GetCourseByIdAsync(id);
+            return Ok(course);
+        }
 
-        
+        [HttpPost("add")]
+        public async Task<ActionResult<bool>> AddCourse(CourseDto courseDto)
+        {
+
+            var course = new Course
+            {
+                CourseName= courseDto.CourseName
+            };
+             
+            unitOfWork.CourseRepository.CreateCourseAsync(course);
+
+            return await unitOfWork.Complete();
+        }
 
     }
 
