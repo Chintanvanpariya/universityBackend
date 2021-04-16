@@ -7,6 +7,6 @@ namespace UniversityServer.DTOs
     {
         public int Id { get; set; }
         public string CourseName { get; set; }
-        public ICollection<Schedule> CourseSchedule { get; set; }
+        public ICollection<ScheduleDto> CourseSchedule { get; set; }
     }
 }

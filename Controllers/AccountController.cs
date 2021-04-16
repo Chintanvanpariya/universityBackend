@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -15,12 +17,17 @@ namespace UniversityServer.Controllers
 {
     public class AccountController : BaseApiController
     {
-        private readonly DataContext _context;
         private readonly ITokenService _tokenService;
-        public AccountController(DataContext context, ITokenService tokenService)
+        private readonly IMapper mapper;
+        private readonly UserManager<AppUser> userManager;
+        private readonly SignInManager<AppUser> signInManager;
+
+        public AccountController(IMapper mapper, UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, ITokenService tokenService)
         {
             _tokenService = tokenService;
-            _context = context;
+            this.mapper = mapper;
+            this.userManager = userManager;
+            this.signInManager = signInManager;
         }
 
         [HttpPost("register")]
@@ -28,22 +35,43 @@ namespace UniversityServer.Controllers
         {
             if (await UserExists(registerDto.Email)) return BadRequest("Username is taken");
 
-            using var hmac = new HMACSHA512();
+            var user = mapper.Map<AppUser>(registerDto);
 
-            var user = new AppUser
-            {
-                Email = registerDto.Email.ToLower(),
-                PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(registerDto.Password)),
-                PasswordSalt = hmac.Key,
-                Name = registerDto.Name,
-                Gender = registerDto.Gender,
-                DateOfBirth = registerDto.DateOfBirth
-            };
+            user.Email = user.Email.ToLower();
 
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
+            var result = await userManager.CreateAsync(user, registerDto.Password);
+
+            if (!result.Succeeded) return BadRequest(result.Errors);
+
+            var roleResult = await userManager.AddToRoleAsync(user, "Student");
+
+            if (!roleResult.Succeeded) return BadRequest(result.Errors);
 
             return new UserDto
+            {
+                Email = user.Email,
+                Token = "_blank",
+            };
+        }
+
+        [HttpPost("add-faculty")]
+        public async Task<ActionResult<UserDto>> AddFaculty(RegisterDto registerDto)
+        {
+            if (await UserExists(registerDto.Email)) return BadRequest("Username is taken");
+
+            var user = mapper.Map<AppUser>(registerDto);
+
+            user.Email = user.Email.ToLower();
+
+            var result = await userManager.CreateAsync(user, registerDto.Password);
+
+            if (!result.Succeeded) return BadRequest(result.Errors);
+
+            var roleResult = await userManager.AddToRoleAsync(user, "Faculty");
+
+            if (!roleResult.Succeeded) return BadRequest(result.Errors);
+
+            return new UserDto 
             {
                 Email = user.Email,
                 Token = "_blank",
@@ -53,30 +81,26 @@ namespace UniversityServer.Controllers
         [HttpPost("login")]
         public async Task<ActionResult<UserDto>> Login(LoginDto loginDto)
         {
-            var user = await _context.Users
-                .SingleOrDefaultAsync(x => x.Email == loginDto.Email);
+            var user = await userManager.Users
+             .SingleOrDefaultAsync(x => x.Email == loginDto.Email.ToLower());
 
             if (user == null) return Unauthorized("Invalid username");
 
-            using var hmac = new HMACSHA512(user.PasswordSalt);
+            var result = await signInManager
+                .CheckPasswordSignInAsync(user, loginDto.Password, false);
 
-            var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(loginDto.Password));
-
-            for (int i = 0; i < computedHash.Length; i++)
-            {
-                if (computedHash[i] != user.PasswordHash[i]) return Unauthorized("Invalid password");
-            }
+            if (!result.Succeeded) return Unauthorized();
 
             return new UserDto
             {
                 Email = user.Email,
-                Token = _tokenService.CreateToken(user)
+                Token = await _tokenService.CreateToken(user)
             };
         }
 
         private async Task<bool> UserExists(string email)
         {
-            return await _context.Users.AnyAsync(x => x.Email == email.ToLower());
+            return await userManager.Users.AnyAsync(x => x.Email == email.ToLower());
         }
     }
 }
