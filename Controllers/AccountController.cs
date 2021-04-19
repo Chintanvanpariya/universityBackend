@@ -24,6 +24,7 @@ namespace UniversityServer.Controllers
 
         public AccountController(IMapper mapper, UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, ITokenService tokenService)
         {
+           
             _tokenService = tokenService;
             this.mapper = mapper;
             this.userManager = userManager;
@@ -38,6 +39,7 @@ namespace UniversityServer.Controllers
             var user = mapper.Map<AppUser>(registerDto);
 
             user.Email = user.Email.ToLower();
+            user.UserName = user.Email.ToLower();
 
             var result = await userManager.CreateAsync(user, registerDto.Password);
 

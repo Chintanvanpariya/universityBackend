@@ -11,7 +11,7 @@ namespace UniversityServer.Extensions
 {
     public static class IdentityServiceExtensions
     {
-        public static IServiceCollection AddIdentityServices(this IServiceCollection services, 
+        public static IServiceCollection AddIdentityServices(this IServiceCollection services,
             IConfiguration config)
         {
             services.AddIdentityCore<AppUser>(opt =>
@@ -25,7 +25,7 @@ namespace UniversityServer.Extensions
                 .AddEntityFrameworkStores<DataContext>();
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(options => 
+                .AddJwtBearer(options =>
                 {
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
