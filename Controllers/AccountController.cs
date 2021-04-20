@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -22,7 +23,7 @@ namespace UniversityServer.Controllers
         private readonly UserManager<AppUser> userManager;
         private readonly SignInManager<AppUser> signInManager;
 
-        public AccountController(IMapper mapper, UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, ITokenService tokenService)
+        public AccountController(IMapper mapper, UserManager<AppUser> userManager, SignInManager<AppUser> signInManager,  ITokenService tokenService)
         {
            
             _tokenService = tokenService;
@@ -50,30 +51,6 @@ namespace UniversityServer.Controllers
             if (!roleResult.Succeeded) return BadRequest(result.Errors);
 
             return new UserDto
-            {
-                Email = user.Email,
-                Token = "_blank",
-            };
-        }
-
-        [HttpPost("add-faculty")]
-        public async Task<ActionResult<UserDto>> AddFaculty(RegisterDto registerDto)
-        {
-            if (await UserExists(registerDto.Email)) return BadRequest("Username is taken");
-
-            var user = mapper.Map<AppUser>(registerDto);
-
-            user.Email = user.Email.ToLower();
-
-            var result = await userManager.CreateAsync(user, registerDto.Password);
-
-            if (!result.Succeeded) return BadRequest(result.Errors);
-
-            var roleResult = await userManager.AddToRoleAsync(user, "Faculty");
-
-            if (!roleResult.Succeeded) return BadRequest(result.Errors);
-
-            return new UserDto 
             {
                 Email = user.Email,
                 Token = "_blank",

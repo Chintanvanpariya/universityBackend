@@ -5,22 +5,53 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using UniversityServer.DTOs;
+using AutoMapper;
 
 namespace UniversityServer.Controllers
 {
     public class AdminController : BaseApiController
     {
-        private readonly UserManager<AppUser> _userManager;
-        public AdminController(UserManager<AppUser> userManager)
+        private readonly UserManager<AppUser> userManager;
+        private readonly IMapper mapper;
+
+        public AdminController(UserManager<AppUser> userManager, IMapper mapper)
         {
-            _userManager = userManager;
+            this.userManager = userManager;
+            this.mapper = mapper;
+        }
+
+
+        [Authorize(Policy = "AdminLevel")]
+        [HttpPost("add-faculty")]
+        public async Task<ActionResult<UserDto>> AddFaculty(RegisterDto registerDto)
+        {
+            if (await userManager.Users.AnyAsync(x => x.Email == registerDto.Email.ToLower())) return BadRequest("Username is taken");
+
+            var user = mapper.Map<AppUser>(registerDto);
+
+            user.Email = user.Email.ToLower();
+
+            var result = await userManager.CreateAsync(user, registerDto.Password);
+
+            if (!result.Succeeded) return BadRequest(result.Errors);
+
+            var roleResult = await userManager.AddToRoleAsync(user, "Faculty");
+
+            if (!roleResult.Succeeded) return BadRequest(result.Errors);
+
+            return new UserDto
+            {
+                Email = user.Email,
+                Token = "_blank",
+            };
         }
 
         [Authorize(Policy = "AdminLevel")]
         [HttpGet("users-with-roles")]
         public async Task<ActionResult> GetUsersWithRoles()
         {
-            var users = await _userManager.Users
+            var users = await userManager.Users
                 .Include(r => r.UserRoles)
                 .ThenInclude(r => r.Role)
                 .OrderBy(u => u.UserName)
@@ -41,28 +72,22 @@ namespace UniversityServer.Controllers
         {
             var selectedRoles = roles.Split(",").ToArray();
 
-            var user = await _userManager.FindByNameAsync(username);
+            var user = await userManager.FindByNameAsync(username);
 
             if (user == null) return NotFound("Could not find user");
 
-            var userRoles = await _userManager.GetRolesAsync(user);
+            var userRoles = await userManager.GetRolesAsync(user);
 
-            var result = await _userManager.AddToRolesAsync(user, selectedRoles.Except(userRoles));
+            var result = await userManager.AddToRolesAsync(user, selectedRoles.Except(userRoles));
 
             if (!result.Succeeded) return BadRequest("Failed to add to roles");
 
-            result = await _userManager.RemoveFromRolesAsync(user, userRoles.Except(selectedRoles));
+            result = await userManager.RemoveFromRolesAsync(user, userRoles.Except(selectedRoles));
 
             if (!result.Succeeded) return BadRequest("Failed to remove from roles");
 
-            return Ok(await _userManager.GetRolesAsync(user));
+            return Ok(await userManager.GetRolesAsync(user));
         }
 
-        [Authorize(Policy = "ModeratePhotoRole")]
-        [HttpGet("photos-to-moderate")]
-        public ActionResult GetPhotosForModeration()
-        {
-            return Ok("Admins or moderators can see this");
-        }
     }
 }

@@ -12,7 +12,6 @@ using UniversityServer.Interfaces;
 namespace UniversityServer.Controllers
 {
     [Authorize]
-
     public class ScheduleController : BaseApiController
     {
 
@@ -39,7 +38,8 @@ namespace UniversityServer.Controllers
             return Ok(course);
         }
 
-        [HttpPost("add")]
+        [Authorize(Policy = "FacultyLevel")]
+        [HttpPost("add-schedule")]
         public async Task<ActionResult<bool>> AddSchedule(ScheduleDto scheduleDto)
         {
 
