@@ -37,7 +37,6 @@ namespace UniversityServer.Data
                 .HasForeignKey(ur => ur.RoleId)
                 .IsRequired();
 
-
             builder.Entity<UserCourse>()
                 .HasKey(k => new { k.UserId, k.CourseId });
 

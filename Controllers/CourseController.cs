@@ -38,19 +38,7 @@ namespace UniversityServer.Controllers
             return Ok(course);
         }
 
-        [HttpPost("add")]
-        public async Task<ActionResult<bool>> AddCourse(CourseDto courseDto)
-        {
 
-            var course = new Course
-            {
-                CourseName= courseDto.CourseName
-            };
-             
-            unitOfWork.CourseRepository.CreateCourseAsync(course);
-
-            return await unitOfWork.Complete();
-        }
 
     }
 

@@ -10,5 +10,7 @@ namespace UniversityServer.Entities
         public int Id { get; set; }
         public string CourseName { get; set; }
         public ICollection<Schedule> CourseSchedule { get; set; }
+        public AppUser User { get; set; }
+        public int? UserId { get; set; }
     }
 }

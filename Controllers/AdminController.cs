@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using UniversityServer.DTOs;
 using AutoMapper;
+using UniversityServer.Interfaces;
 
 namespace UniversityServer.Controllers
 {
@@ -14,11 +15,13 @@ namespace UniversityServer.Controllers
     {
         private readonly UserManager<AppUser> userManager;
         private readonly IMapper mapper;
+        private readonly IUnitOfWork unitOfWork;
 
-        public AdminController(UserManager<AppUser> userManager, IMapper mapper)
+        public AdminController(UserManager<AppUser> userManager, IMapper mapper, IUnitOfWork uow)
         {
             this.userManager = userManager;
             this.mapper = mapper;
+            this.unitOfWork = uow;
         }
 
 
@@ -31,6 +34,7 @@ namespace UniversityServer.Controllers
             var user = mapper.Map<AppUser>(registerDto);
 
             user.Email = user.Email.ToLower();
+            user.UserName = user.Email.ToLower();
 
             var result = await userManager.CreateAsync(user, registerDto.Password);
 
@@ -45,6 +49,33 @@ namespace UniversityServer.Controllers
                 Email = user.Email,
                 Token = "_blank",
             };
+
+        }
+
+
+        [HttpPost("add-course")]
+        public async Task<ActionResult<bool>> AddCourse(CourseDto courseDto)
+        {
+            var course = mapper.Map<Course>(courseDto);
+
+            unitOfWork.CourseRepository.CreateCourseAsync(course);
+
+            return await unitOfWork.Complete();
+        }
+
+        //[Authorize(Policy = "AdminLevel")]
+        [HttpPost("course-update")]
+        public async Task<ActionResult<CourseDto>> UpdateCourse(CourseDto coursedto)
+        {
+            //var courseFromDb = await unitOfWork.CourseRepository.GetCourseByIdAsync(coursedto.Id);
+
+            var course = mapper.Map<Course>(coursedto);
+
+            unitOfWork.CourseRepository.UpdateCourse(course);
+
+            if (await unitOfWork.Complete()) return Ok("Course Updated Successfully");
+
+            return BadRequest("Failed to update Course Faculty !!!");
         }
 
         [Authorize(Policy = "AdminLevel")]
@@ -65,6 +96,7 @@ namespace UniversityServer.Controllers
 
             return Ok(users);
         }
+
 
         [Authorize(Policy = "AdminLevel")]
         [HttpPost("edit-roles/{username}")]

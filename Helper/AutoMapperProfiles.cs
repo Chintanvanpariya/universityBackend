@@ -21,6 +21,8 @@ namespace UniversityServer.Helper
 
             CreateMap<RegisterDto, AppUser>();
 
+            CreateMap<CourseDto, Course>();
+
             CreateMap<Schedule, ScheduleDto>();
         }
     }
