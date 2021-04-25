@@ -9,6 +9,7 @@ using UniversityServer.DTOs;
 using AutoMapper;
 using UniversityServer.Interfaces;
 
+
 namespace UniversityServer.Controllers
 {
     public class AdminController : BaseApiController
@@ -47,35 +48,68 @@ namespace UniversityServer.Controllers
             return new UserDto
             {
                 Email = user.Email,
-                Token = "_blank",
+                Token = "_blank"
             };
 
         }
 
-
+        [Authorize(Policy = "AdminLevel")]
         [HttpPost("add-course")]
-        public async Task<ActionResult<bool>> AddCourse(CourseDto courseDto)
+        public async Task<ActionResult<string>> AddCourse(CourseDto courseDto)
         {
-            var course = mapper.Map<Course>(courseDto);
+            var user = await unitOfWork.UserRepository.GetUserByIdAsync(courseDto.UserId);
 
-            unitOfWork.CourseRepository.CreateCourseAsync(course);
+            if (user != null)
+            {
+                var course = mapper.Map<Course>(courseDto);
 
-            return await unitOfWork.Complete();
+                unitOfWork.CourseRepository.CreateCourseAsync(course);
+
+                if (await unitOfWork.Complete()) return Ok("Course Created Successfully");
+            }
+            return BadRequest("Faculty Does not exist !");
         }
 
-        //[Authorize(Policy = "AdminLevel")]
+        [Authorize(Policy = "AdminLevel")]
         [HttpPost("course-update")]
-        public async Task<ActionResult<CourseDto>> UpdateCourse(CourseDto coursedto)
+        public async Task<ActionResult<string>> UpdateCourse(CourseDto coursedto)
         {
-            //var courseFromDb = await unitOfWork.CourseRepository.GetCourseByIdAsync(coursedto.Id);
+            var user = await unitOfWork.UserRepository.GetUserByIdAsync(coursedto.UserId);
+            if(user == null)
+            {
+                return BadRequest("Updated Faculty Does not exist !");
+            }
+            var courseFromDb = await unitOfWork.CourseRepository.GetCourseByIdAsync(coursedto.Id);
+            
+            if(courseFromDb != null)
+            {
+                var course = mapper.Map<Course>(coursedto);
 
-            var course = mapper.Map<Course>(coursedto);
+                unitOfWork.CourseRepository.UpdateCourse(course);
 
-            unitOfWork.CourseRepository.UpdateCourse(course);
+                if (await unitOfWork.Complete()) return Ok("Course Updated Successfully");
+            }
+            
+            return BadRequest("Update Failed ! Course does not exist.");
+        }
 
-            if (await unitOfWork.Complete()) return Ok("Course Updated Successfully");
+        [Authorize(Policy = "AdminLevel")]
+        [HttpDelete("remove-course/{id}")]
+        public async Task<ActionResult> DeleteCourse(int id)
+        {
+            var courseDto = await unitOfWork.CourseRepository.GetCourseByIdAsync(id);
 
-            return BadRequest("Failed to update Course Faculty !!!");
+            if (courseDto == null)
+            {
+                return BadRequest("Course Not Found");
+            }
+            var course = mapper.Map<Course>(courseDto);
+
+            unitOfWork.CourseRepository.DeleteCourseAsync(course);
+
+            if (await unitOfWork.Complete()) return Ok();
+
+            return BadRequest("Problem deleting the message");
         }
 
         [Authorize(Policy = "AdminLevel")]
@@ -120,6 +154,7 @@ namespace UniversityServer.Controllers
 
             return Ok(await userManager.GetRolesAsync(user));
         }
+
 
     }
 }

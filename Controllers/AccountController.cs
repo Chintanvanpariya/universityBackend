@@ -53,7 +53,7 @@ namespace UniversityServer.Controllers
             return new UserDto
             {
                 Email = user.Email,
-                Token = "_blank",
+                Token="_blank"
             };
         }
 
