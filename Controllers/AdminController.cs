@@ -53,65 +53,7 @@ namespace UniversityServer.Controllers
 
         }
 
-        [Authorize(Policy = "AdminLevel")]
-        [HttpPost("add-course")]
-        public async Task<ActionResult<string>> AddCourse(CourseDto courseDto)
-        {
-            var user = await unitOfWork.UserRepository.GetUserByIdAsync(courseDto.UserId);
-
-            if (user != null)
-            {
-                var course = mapper.Map<Course>(courseDto);
-
-                unitOfWork.CourseRepository.CreateCourseAsync(course);
-
-                if (await unitOfWork.Complete()) return Ok("Course Created Successfully");
-            }
-            return BadRequest("Faculty Does not exist !");
-        }
-
-        [Authorize(Policy = "AdminLevel")]
-        [HttpPost("course-update")]
-        public async Task<ActionResult<string>> UpdateCourse(CourseDto coursedto)
-        {
-            var user = await unitOfWork.UserRepository.GetUserByIdAsync(coursedto.UserId);
-            if(user == null)
-            {
-                return BadRequest("Updated Faculty Does not exist !");
-            }
-            var courseFromDb = await unitOfWork.CourseRepository.GetCourseByIdAsync(coursedto.Id);
-            
-            if(courseFromDb != null)
-            {
-                var course = mapper.Map<Course>(coursedto);
-
-                unitOfWork.CourseRepository.UpdateCourse(course);
-
-                if (await unitOfWork.Complete()) return Ok("Course Updated Successfully");
-            }
-            
-            return BadRequest("Update Failed ! Course does not exist.");
-        }
-
-        [Authorize(Policy = "AdminLevel")]
-        [HttpDelete("remove-course/{id}")]
-        public async Task<ActionResult> DeleteCourse(int id)
-        {
-            var courseDto = await unitOfWork.CourseRepository.GetCourseByIdAsync(id);
-
-            if (courseDto == null)
-            {
-                return BadRequest("Course Not Found");
-            }
-            var course = mapper.Map<Course>(courseDto);
-
-            unitOfWork.CourseRepository.DeleteCourseAsync(course);
-
-            if (await unitOfWork.Complete()) return Ok();
-
-            return BadRequest("Problem deleting the message");
-        }
-
+        
         [Authorize(Policy = "AdminLevel")]
         [HttpGet("users-with-roles")]
         public async Task<ActionResult> GetUsersWithRoles()

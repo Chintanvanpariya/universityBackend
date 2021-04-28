@@ -12,7 +12,7 @@ namespace UniversityServer.Interfaces
         //Task<IEnumerable<AppUser>> GetUsersAsync();
 
         //Task<AppUser> GetUserByNameAsync(string name);
-        Task<AppUser> GetUserByIdAsync(int id);
+        Task<AppUser> GetUserByIdAsync(int? id);
         Task<IEnumerable<MemberDto>> GetMembersAsync();
         Task<MemberDto> GetMemberAsync(string name);
         Task<string> EnrollCourseAsync(int id);
