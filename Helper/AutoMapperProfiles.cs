@@ -17,13 +17,15 @@ namespace UniversityServer.Helper
                 .ForMember(dest => dest.Courses, opt => opt.MapFrom(src => src.UserCourses))
                 .ForMember(dest=> dest.Age, opt => opt.MapFrom(src=>src.DateOfBirth.CalculateAge()));
 
-            CreateMap<Course, CourseDto>();
-
             CreateMap<RegisterDto, AppUser>();
+
+            CreateMap<Course, CourseDto>();
 
             CreateMap<CourseDto, Course>();
 
             CreateMap<Schedule, ScheduleDto>();
+
+            CreateMap<ScheduleDto, Schedule>();
         }
     }
 }

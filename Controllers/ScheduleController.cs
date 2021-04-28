@@ -39,7 +39,7 @@ namespace UniversityServer.Controllers
         }
 
         [Authorize(Policy = "FacultyLevel")]
-        [HttpPost("add-schedule")]
+        [HttpPost("add")]
         public async Task<ActionResult<bool>> AddSchedule(ScheduleDto scheduleDto)
         {
 
@@ -48,15 +48,58 @@ namespace UniversityServer.Controllers
 
             var schedule = new Schedule
             {
-                Fromtime = new TimeSpan(int.Parse(fromlist[0]), int.Parse(fromlist[1]),0),
+                Fromtime = new TimeSpan(int.Parse(fromlist[0]), int.Parse(fromlist[1]), 0),
                 ToTime = new TimeSpan(int.Parse(tolist[0]), int.Parse(tolist[1]), 0),
                 Day = scheduleDto.Day,
-                CourseId= scheduleDto.CourseId
+                CourseId = scheduleDto.CourseId
             };
 
             unitOfWork.ScheduleRepository.AddScheduleAsync(schedule);
 
             return await unitOfWork.Complete();
+        }
+
+        [Authorize(Policy = "FacultyLevel")]
+        [HttpPost("update")]
+        public async Task<ActionResult<string>> UpdateSchedule(ScheduleDto scheduleDto)
+        {
+            var courseFromDb = await unitOfWork.CourseRepository.GetCourseByIdAsync(scheduleDto.CourseId);
+
+            if (scheduleDto.FacultyId == courseFromDb.UserId)
+            {
+                var schedule = mapper.Map<Schedule>(scheduleDto);
+
+                unitOfWork.ScheduleRepository.UpdateSchedule(schedule);
+
+                if (await unitOfWork.Complete()) return Ok("Schedule Updated Successfully");
+            }
+
+            return BadRequest("Unauthorized Faculty ! Update Failed");
+        }
+
+        [Authorize(Policy = "FacultyLevel")]
+        [HttpDelete]
+        [Route("remove/{facultyId:int}/{scheduleId:int}")]
+        public async Task<ActionResult<string>> DeleteSchedule(int FacultyId, int scheduleId)
+        {
+            var scheduleDto = await unitOfWork.ScheduleRepository.GetScheduleByIdAsync(scheduleId);
+
+            var courseFromDb = await unitOfWork.CourseRepository.GetCourseByIdAsync(scheduleDto.CourseId);
+
+            if(courseFromDb.UserId == FacultyId)
+            {
+                if (scheduleDto == null)
+                {
+                    return BadRequest("Schedule Not Found");
+                }
+                var schedule = mapper.Map<Schedule>(scheduleDto);
+
+                unitOfWork.ScheduleRepository.DeleteScheduleAsync(schedule);
+
+                if (await unitOfWork.Complete()) return Ok();
+            }
+
+            return BadRequest("Unauthorized Faculty ! Deletion Failed");
         }
 
     }

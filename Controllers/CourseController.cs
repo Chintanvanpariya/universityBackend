@@ -84,7 +84,7 @@ namespace UniversityServer.Controllers
 
         [Authorize(Policy = "AdminLevel")]
         [HttpDelete("remove/{id}")]
-        public async Task<ActionResult> DeleteCourse(int id)
+        public async Task<ActionResult<string>> DeleteCourse(int id)
         {
             var courseDto = await unitOfWork.CourseRepository.GetCourseByIdAsync(id);
 
@@ -98,7 +98,7 @@ namespace UniversityServer.Controllers
 
             if (await unitOfWork.Complete()) return Ok();
 
-            return BadRequest("Problem deleting the message");
+            return BadRequest("Problem deleting the course");
         }
 
 

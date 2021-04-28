@@ -12,5 +12,6 @@ namespace UniversityServer.DTOs
         public string ToTime { get; set; }
         public string Day { get; set; }
         public int CourseId { get; set; }
+        public int FacultyId { get; set; }
     }
 }
