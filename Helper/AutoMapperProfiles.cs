@@ -19,13 +19,10 @@ namespace UniversityServer.Helper
 
             CreateMap<RegisterDto, AppUser>();
 
-            CreateMap<Course, CourseDto>();
+            CreateMap<Course, CourseDto>().ReverseMap();
 
-            CreateMap<CourseDto, Course>();
+            CreateMap<Schedule, ScheduleDto>().ReverseMap();
 
-            CreateMap<Schedule, ScheduleDto>();
-
-            CreateMap<ScheduleDto, Schedule>();
         }
     }
 }
